@@ -4,3 +4,4 @@ trt_siglip/
 *.onnx
 *.engine
 data/
+gguf/
