@@ -11,6 +11,7 @@ All notable changes to this project are recorded here, newest first.
 - `GraphDecoder` with `eager` attention: graph capture failed with "Cannot copy between CPU and CUDA tensors". The decode step now passes an explicit 4D mask built on the GPU when the text model uses `eager` attention. The `sdpa` path is unchanged.
 
 ### Added
+- `smolvlm_256m_evlm_eval.ipynb`: result cell for PyTorch against GGUF f16, Q8_0 and Q4_K_M on both EVLM tasks (Colab GPU). PyTorch is fastest per call, GGUF decodes about 2 times faster per token, and 4-bit gives no speed gain. The component score is still broken.
 - `evlm_eval.py --backend gguf --quant {f16,q8_0,q4_k_m,q4_0}`: the EVLM tasks on llama.cpp (llama-mtmd-cli, GGUF) with the same interface as the PyTorch runner. Timings come from llama.cpp's log (image encode = input, prompt eval = prefill, generated tokens = decode).
 - `smolvlm_256m_evlm_eval.ipynb`: last cell installs `tensorrt` and `onnx`, downloads the datasets if they are missing, prints the paths it uses, and builds llama.cpp on Colab if it is missing, then runs both tasks for the PyTorch best setup and for GGUF f16, Q8_0 and Q4_K_M, and prints two comparison tables.
 - `smolvlm_256m_gguf_q4.ipynb`: result cell. On a Colab GPU, Q4_K_M is 2.6 times smaller than f16 with the same answer, but it is not faster: Q8_0 is fastest (261 ms against 302 ms for Q4_K_M).
