@@ -11,6 +11,8 @@ All notable changes to this project are recorded here, newest first.
 - `GraphDecoder` with `eager` attention: graph capture failed with "Cannot copy between CPU and CUDA tensors". The decode step now passes an explicit 4D mask built on the GPU when the text model uses `eager` attention. The `sdpa` path is unchanged.
 
 ### Added
+- `evlm_eval.py --backend gguf --quant {f16,q8_0,q4_k_m,q4_0}`: the EVLM tasks on llama.cpp (llama-mtmd-cli, GGUF) with the same interface as the PyTorch runner. Timings come from llama.cpp's log (image encode = input, prompt eval = prefill, generated tokens = decode).
+- `smolvlm_256m_evlm_eval.ipynb`: last cell builds llama.cpp on Colab if it is missing, then runs both tasks for the PyTorch best setup and for GGUF f16, Q8_0 and Q4_K_M, and prints two comparison tables.
 - `smolvlm_256m_gguf_q4.ipynb`: result cell. On a Colab GPU, Q4_K_M is 2.6 times smaller than f16 with the same answer, but it is not faster: Q8_0 is fastest (261 ms against 302 ms for Q4_K_M).
 - `gguf_q4.py` and `smolvlm_256m_gguf_q4.ipynb`: 4-bit GGUF model (Q4_K_M) for SmolVLM-256M on the llama.cpp CUDA backend, compared with f16 and Q8_0 on the same image and prompt. The language model is quantized with `llama-quantize`, and the vision projector stays f16. Timings come from llama.cpp's own log. `make gguf` runs it. Implements issue #1 of edge-ai-smol-vlm-256-optimization.
 - `get_data.py`: downloads the datasets of the EVLM paper (Farahani et al., EDGE 2026) with HTTP range requests, standard library only: one 4 s clip (120 frames, 720x480) for each of 8 environments from the UZH power line dataset (Xing et al., IROS 2023), and the InsPLAD-fault supervised classification crops. `data/` is git-ignored. `make data` runs it.

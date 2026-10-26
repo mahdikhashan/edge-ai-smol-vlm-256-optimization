@@ -119,6 +119,34 @@ class Runner:
                 "decode_ms": decode_ms, "vlm_ms": vlm_ms}
 
 
+class GgufRunner:
+    """The same interface as Runner, on llama.cpp (llama-mtmd-cli, GGUF). The timings are llama.cpp's own log:
+    input = image encode, prefill = prompt eval (image tokens included), decode = generated tokens.
+    The torch-only flags (preprocess, size, decode, stop, trt) do not apply here: llama.cpp does its own
+    image processing, stops at EOS and uses its own graphs."""
+
+    def __init__(self, args):
+        from gguf_q4 import F16_MODEL, MMPROJ, download, quantize
+
+        self.work = Path(args.gguf_dir)
+        self.work.mkdir(exist_ok=True)
+        f16, self.mmproj = self.work / F16_MODEL, self.work / MMPROJ
+        download(F16_MODEL, f16)
+        download(MMPROJ, self.mmproj)
+        self.model = quantize(args.quantize, f16, args.quant, self.work)
+        self.cli, self.ngl, self.max_new = args.cli, args.ngl, args.max_new_tokens
+        self.tmp = self.work / "current.png"
+
+    def ask(self, image, prompt):
+        from gguf_q4 import run_once
+
+        image.save(self.tmp)  # not timed: llama.cpp reads the file, the torch runner gets PIL images
+        r = run_once(self.cli, self.model, self.mmproj, self.tmp, prompt, self.max_new, self.ngl)
+        return {"answer": r["answer"], "tokens": r["decode_tokens"], "input_ms": r["encode_ms"],
+                "prefill_ms": r["prefill_ms"], "decode_ms": r["decode_ms"],
+                "vlm_ms": r["prefill_ms"] + r["decode_ms"]}
+
+
 def per_token(calls):
     """Decode ms per generated token: the decode runs one step for each answer token (the last step makes EOS)."""
     return sum(c["decode_ms"] for c in calls) / max(sum(c["tokens"] for c in calls), 1)
@@ -250,17 +278,28 @@ def main():
     ap.add_argument("--limit", type=int, default=10, help="insplad: images per asset and label")
     ap.add_argument("--max-new-tokens", type=int, default=64)
     ap.add_argument("--out", default="results")
+    ap.add_argument("--backend", choices=("torch", "gguf"), default="torch", help="torch (PyTorch) or gguf (llama.cpp)")
+    ap.add_argument("--quant", choices=("f16", "q8_0", "q4_k_m", "q4_0"), default="q4_k_m", help="gguf: language model quant")
+    ap.add_argument("--cli", default="llama-mtmd-cli", help="gguf: llama.cpp multimodal CLI")
+    ap.add_argument("--quantize", default="llama-quantize", help="gguf: llama-quantize")
+    ap.add_argument("--gguf-dir", default="gguf", help="gguf: model folder (downloaded on first use)")
+    ap.add_argument("--ngl", type=int, default=99, help="gguf: layers on the GPU")
     args = ap.parse_args()
 
-    config = {k: getattr(args, k) for k in ("preprocess", "size", "decode", "stop", "trt", "filter", "tau")}
-    tag = f"{args.task}_{args.preprocess}_s{args.size}_{args.decode}_{'stop' if args.stop else 'nostop'}_" \
-          f"{'trt' if args.trt else 'notrt'}" + (f"_{args.filter}" if args.task == "clips" else "")
+    if args.backend == "gguf":
+        config = {"backend": "gguf", "quant": args.quant, "filter": args.filter, "tau": args.tau}
+        tag = f"{args.task}_gguf_{args.quant}" + (f"_{args.filter}" if args.task == "clips" else "")
+    else:
+        config = {k: getattr(args, k) for k in ("preprocess", "size", "decode", "stop", "trt", "filter", "tau")}
+        config["backend"] = "torch"
+        tag = f"{args.task}_{args.preprocess}_s{args.size}_{args.decode}_{'stop' if args.stop else 'nostop'}_" \
+              f"{'trt' if args.trt else 'notrt'}" + (f"_{args.filter}" if args.task == "clips" else "")
     Path(args.out).mkdir(exist_ok=True)
     with open(Path(args.out) / f"{tag}.jsonl", "w") as f:
         def log(record):
             f.write(json.dumps(record) + "\n")
 
-        runner = Runner(args)
+        runner = GgufRunner(args) if args.backend == "gguf" else Runner(args)
         summary = (run_clips if args.task == "clips" else run_insplad)(runner, args, log)
         log({"summary": summary, "config": config})
     print("SUMMARY", json.dumps({"task": args.task, **config, **summary}))
