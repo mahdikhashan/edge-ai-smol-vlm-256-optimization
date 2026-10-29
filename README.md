@@ -1,6 +1,6 @@
 ## SmolVLM-256M Edge Inference Optimization
 
-Faster inference for SmolVLM-256M on edge GPUs, without custom CUDA or Triton kernels. The repository also reproduces the benchmark of the EVLM power line inspection paper (Farahani et al., EDGE 2026). Tests ran on a Colab GPU. The Jetson Orin run is still open.
+Faster inference for SmolVLM-256M on edge GPUs, without custom CUDA or Triton kernels. The repository also reproduces the benchmark of the EVLM power line inspection paper (Farahani et al., EDGE 2026). Tests ran on a Colab GPU.
 
 ### Setup
 
