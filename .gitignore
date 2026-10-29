@@ -5,3 +5,8 @@ trt_siglip/
 *.engine
 data/
 gguf/
+evlm/data/
+evlm/gguf/
+evlm/trt/
+evlm/llama.cpp/
+evlm/results/

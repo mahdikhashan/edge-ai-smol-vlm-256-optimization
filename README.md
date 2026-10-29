@@ -35,7 +35,7 @@ Each target runs one script. Each script has a notebook (`smolvlm_256m_*.ipynb`)
 - `make prefill`: prefill time of SigLIP, connector, decoder and LM head.
 - `make trt`: TensorRT engine for the SigLIP encoder.
 - `make tiles`: number of image tiles against speed and answer.
-- `make data`, then `make evlm`: EVLM benchmark on the paper datasets (about 1.4 GB of data).
+- `evlm/evlm.ipynb`: EVLM reproduction on the paper datasets (about 1.4 GB of data). Runs the PyTorch and llama.cpp (GGUF) setups, the ablation and the Jetson comparison.
 - `make gguf`: 4-bit GGUF model (Q4_K_M) on the llama.cpp CUDA backend, against f16 and Q8_0 (issue #1). Needs `llama-mtmd-cli` and `llama-quantize`.
 
 ---

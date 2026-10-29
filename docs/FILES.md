@@ -19,9 +19,7 @@
 | `smolvlm_256m_trt_siglip.ipynb` | Notebook for the TensorRT experiment. |
 | `tile_sweep.py` | Experiment: runs a range of tile settings (`default`, `sizeN`, `nosplit`) and reports tiles, tokens, cache length, request time and answer. Run with `make tiles`. |
 | `smolvlm_256m_tile_sweep.ipynb` | Notebook for the tile experiment. |
-| `get_data.py` | Downloads the EVLM paper datasets (only the needed files): one 4 s clip per environment from the UZH power line dataset, and the InsPLAD fault crops. Run with `make data`. |
-| `evlm_eval.py` | EVLM benchmark with the best setup. Task `clips`: frame filter + VLM, segment latency. Task `insplad`: component and rust accuracy. Each speed-up is a flag for ablation. Run with `make evlm`. |
-| `smolvlm_256m_evlm_eval.ipynb` | Notebook: dataset setup, both tasks, and an ablation table. |
+| `evlm/evlm.ipynb` | EVLM reproduction in one notebook: datasets, PyTorch and llama.cpp runs, ablation, and the log of earlier runs. |
 | `smolvlm_256m_cuda_graph_decoding.ipynb` | Notebook that runs both scripts and shows the results. |
 | `Makefile` | `make run`, `make bench`, or `make` for both. Set the image with `IMAGE=path`. |
 | `CHANGELOG.md` | List of changes. |

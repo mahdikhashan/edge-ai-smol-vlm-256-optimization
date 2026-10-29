@@ -2,6 +2,14 @@
 
 All notable changes to this project are recorded here, newest first.
 
+## 2026-10-29
+
+### Changed
+- Moved the EVLM reproduction to `evlm/`. It is one notebook, `evlm/evlm.ipynb`, with the dataset download, the PyTorch and llama.cpp runners, the best setup, the paper-like baseline, the ablation, the Jetson comparison and the GGUF runs. The earlier notebook cells are kept at the end as the log of previous runs, with their outputs.
+
+### Removed
+- `evlm_eval.py`, `get_data.py` and `smolvlm_256m_evlm_eval.ipynb`. Their code is in `evlm/evlm.ipynb`. The `make data` and `make evlm` targets are removed.
+
 ## 2026-10-22
 
 ### Fixed

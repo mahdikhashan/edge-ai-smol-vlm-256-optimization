@@ -3,7 +3,7 @@ IMAGE ?= frame.jpg
 PREPROCESS ?= default
 IMG = $(abspath $(IMAGE))
 
-.PHONY: all run bench attn hybrid preprocess eos prefill trt tiles data evlm gguf gguf
+.PHONY: all run bench attn hybrid preprocess eos prefill trt tiles gguf
 
 all: run bench
 
@@ -33,13 +33,6 @@ trt:
 
 tiles:
 	$(PYTHON) tile_sweep.py --image $(IMG)
-
-data:
-	$(PYTHON) get_data.py
-
-evlm:
-	$(PYTHON) evlm_eval.py --task clips
-	$(PYTHON) evlm_eval.py --task insplad
 
 gguf:
 	$(PYTHON) gguf_q4.py --image $(IMG)

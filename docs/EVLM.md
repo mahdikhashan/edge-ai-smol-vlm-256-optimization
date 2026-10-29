@@ -2,18 +2,18 @@
 
 The EVLM paper (Farahani et al., EDGE 2026) uses two public datasets (its Section V-B). It has no appendix.
 
-| Dataset | Source | Used for | What `get_data.py` downloads |
+| Dataset | Source | Used for | What the notebook downloads |
 |---|---|---|---|
 | UZH power line dataset (Xing et al., IROS 2023, ref. [35]) | [download.ifi.uzh.ch](https://download.ifi.uzh.ch/rpg/powerline_tracking_dataset/power_line_dataset.zip), 25 GB zip | Speed tests on 4 s clips | One clip of 120 frames (720x480, 30 fps) for each of 8 environments, 501 MB |
 | InsPLAD (Vieira e Silva et al., 2023, ref. [43]) | [Mendeley Data](https://data.mendeley.com/datasets/5n3fjgvfyz/1), 6.4 GB zip, CC BY-NC 3.0 | Accuracy test | `supervised_fault_classification.zip`: 5 assets, labels good, rust, missing-cap and bird-nest. 873 MB download, 860 MB extracted |
 
-- Each UZH environment folder is one continuous flight. The frames are split at random into train, val and test, so `get_data.py` sorts them by frame number and cuts a continuous clip.
+- Each UZH environment folder is one continuous flight. The frames are split at random into train, val and test, so the notebook sorts them by frame number and cuts a continuous clip.
 - The paper does not name the UZH folders. Our mapping: forest = `powerline_1_forest`, city1 = `powerlines_16_city` (start of the flight; the middle is grass), mountain = `powerline_7_mountain`, city2 = `powerline_5_japan`, sand = `powerline_3_sand`, warehouse = `powerline_11_warehouse`, wasteland = `powerline_4_wasteland`, industrial = `powerline_2_industrial`.
-- InsPLAD-fault has no test split. `evlm_eval.py` uses the `val` split.
+- InsPLAD-fault has no test split. The notebook uses the `val` split.
 - A first check on the clips (CPU only, on a Mac): the histogram filter (512 bins, threshold 0.95) keeps 1 to 2 key frames per 4 s clip and takes about 2.3 ms per frame. PNG decode takes about 7 ms per frame.
 - We use the base model. The paper fine-tunes it with LoRA, and those weights are not public. LoRA does not change the speed after the weights are merged, so the latency can be compared.
 - To compare with the paper, run on the Jetson Orin and compare the time for each VLM call (paper: about 6.448 s / 3.45 calls = 1.87 s, our estimate from Table V), the tokens per answer and the decode ms per token. Do not compare the time for each segment directly: the number of key frames changes it. The notebook's last cell does this for a paper-like baseline and the best setup.
-- The segment time in `evlm_eval.py` is the filter time plus the VLM calls. PNG decode (about 7-10 ms per frame on a Mac CPU) is reported apart, because the paper decodes video.
+- The segment time in `evlm/evlm.ipynb` is the filter time plus the VLM calls. PNG decode (about 7-10 ms per frame on a Mac CPU) is reported apart, because the paper decodes video.
 
 ## EVLM ablation results
 
