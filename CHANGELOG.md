@@ -5,6 +5,11 @@ All notable changes to this project are recorded here, newest first.
 ## 2026-10-29
 
 ### Changed
+- Moved every experiment into `notebooks/`. Each notebook now holds its own code (the setup is repeated in each one), and its earlier cells and outputs are kept at the bottom under "Log of previous runs".
+- README and `docs/FILES.md` describe the notebooks instead of the scripts.
+
+### Removed
+- All experiment scripts in the root (`smolvlm_cuda_graphs.py`, `bench.py`, `attn_check.py`, `hybrid_attn.py`, `gpu_preprocess.py`, `eos_stop.py`, `prefill_profile.py`, `trt_siglip.py`, `tile_sweep.py`, `gguf_q4.py`) and the `Makefile`.
 - Moved the EVLM reproduction to `evlm/`. It is one notebook, `evlm/evlm.ipynb`, with the dataset download, the PyTorch and llama.cpp runners, the best setup, the paper-like baseline, the ablation, the Jetson comparison and the GGUF runs. The earlier notebook cells are kept at the end as the log of previous runs, with their outputs.
 
 ### Removed

@@ -1,8 +1,8 @@
 ## SmolVLM-256M Edge Inference Optimization
 
-Faster inference for SmolVLM-256M on edge GPUs, without custom CUDA or Triton kernels. The repository also runs the benchmark of the EVLM power line inspection paper (Farahani et al., EDGE 2026) with the fastest setup. Tests ran on a Colab GPU. The Jetson Orin run is still open.
+Faster inference for SmolVLM-256M on edge GPUs, without custom CUDA or Triton kernels. The repository also reproduces the benchmark of the EVLM power line inspection paper (Farahani et al., EDGE 2026). Tests ran on a Colab GPU. The Jetson Orin run is still open.
 
-### Setup and run
+### Setup
 
 Make sure a CUDA GPU and Python 3 are available, then clone the repository:
 
@@ -11,48 +11,46 @@ git clone https://github.com/mahdikhashan/edge-ai-smol-lvm-250-optimization
 cd edge-ai-smol-lvm-250-optimization
 ```
 
-it needs PyTorch, transformers 4.56 or newer, Pillow and NumPy. The TensorRT experiments also need `tensorrt` and `onnx`. On the Jetson, TensorRT comes with JetPack.
+Install the packages:
 
 ```bash
-pip install "transformers>=4.56" pillow numpy onnx tensorrt
+pip install "transformers>=4.56" pillow numpy pandas onnx tensorrt
 ```
 
-- run the CUDA-graph decoder on one image:
+On the Jetson, TensorRT comes with JetPack, so only `onnx` is needed.
 
-```bash
-make run IMAGE=frame.jpg
-```
+### Notebooks
 
-#### Experiments
+Open a notebook in `notebooks/` and run it from the top. Each one is independent.
 
-Each target runs one script. Each script has a notebook (`smolvlm_256m_*.ipynb`) that runs it on Colab.
+- `smolvlm_256m_cuda_graph_decoding.ipynb`: one image with CUDA-graph decoding.
+- `smolvlm_256m_benchmark.ipynb`: bare model, eager and graph decoding, stop at the end token, image preparation, and TensorRT.
+- `smolvlm_256m_attention_check.ipynb`: attention implementations.
+- `smolvlm_256m_hybrid_attention.ipynb`: `sdpa` for the prefill and `eager` for the decode.
+- `smolvlm_256m_gpu_preprocessing.ipynb`: image processors on the CPU and the GPU.
+- `smolvlm_256m_eos_stop.ipynb`: when to stop the decode loop.
+- `smolvlm_256m_prefill_profile.ipynb`: prefill time of each part of the model.
+- `smolvlm_256m_trt_siglip.ipynb`: TensorRT engine for the SigLIP encoder.
+- `smolvlm_256m_tile_sweep.ipynb`: fewer image tiles.
+- `smolvlm_256m_gguf_q4.ipynb`: 4-bit GGUF model with llama.cpp (issue #1).
+- `evlm/evlm.ipynb`: EVLM reproduction on the paper datasets (about 1.4 GB of data).
 
-- `make bench`: bare model, eager and CUDA-graph decoding, preprocessing timers, memory and stop at EOS. Options: `PREPROCESS=fast-gpu`, and `--size` and `--trt` in `bench.py`.
-- `make attn`: attention implementations (`sdpa`, `eager`).
-- `make hybrid`: `sdpa` for prefill and `eager` for decode.
-- `make preprocess`: image preprocessing on the CPU and on the GPU.
-- `make eos`: stop the decode at the end token.
-- `make prefill`: prefill time of SigLIP, connector, decoder and LM head.
-- `make trt`: TensorRT engine for the SigLIP encoder.
-- `make tiles`: number of image tiles against speed and answer.
-- `evlm/evlm.ipynb`: EVLM reproduction on the paper datasets (about 1.4 GB of data). Runs the PyTorch and llama.cpp (GGUF) setups, the ablation and the Jetson comparison.
-- `make gguf`: 4-bit GGUF model (Q4_K_M) on the llama.cpp CUDA backend, against f16 and Q8_0 (issue #1). Needs `llama-mtmd-cli` and `llama-quantize`.
+Each notebook keeps its earlier cells and outputs at the bottom, under "Log of previous runs".
 
 ---
 
-#### Results
+### Results
 
 On one Colab GPU:
 
 - one frame with a 9-token answer: 159 ms with the best setup (5 tiles, fast GPU preprocessing, CUDA-graph decoding, stop at EOS, TensorRT SigLIP). The bare model takes about 954 ms (estimate).
 - EVLM benchmark: each VLM call is 6.1 times faster than a paper-like baseline (221 ms and 1355 ms).
 
-#### Debug
+### Debug
 
-- `make -n <target>` shows the command of a target, and `python <script>.py --help` shows the options of a script.
 - TensorRT engines are kept in `trt_siglip/`. Delete the folder after a change of GPU or TensorRT version.
 
-#### Documentation
+### Documentation
 
 - [Files and notebooks](docs/FILES.md)
 - [Optimization ranking](docs/RANKING.md)
