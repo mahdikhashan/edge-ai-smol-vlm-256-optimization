@@ -35,8 +35,6 @@ Open a notebook in `notebooks/` and run it from the top. Each one is independent
 - `smolvlm_256m_gguf_q4.ipynb`: 4-bit GGUF model with llama.cpp (issue #1).
 - `evlm/evlm.ipynb`: EVLM reproduction on the paper datasets (about 1.4 GB of data).
 
-Each notebook keeps its earlier cells and outputs at the bottom, under "Log of previous runs".
-
 ---
 
 ### Results
@@ -45,10 +43,6 @@ On one Colab GPU:
 
 - one frame with a 9-token answer: 159 ms with the best setup (5 tiles, fast GPU preprocessing, CUDA-graph decoding, stop at EOS, TensorRT SigLIP). The bare model takes about 954 ms (estimate).
 - EVLM benchmark: each VLM call is 6.1 times faster than a paper-like baseline (221 ms and 1355 ms).
-
-### Debug
-
-- TensorRT engines are kept in `trt_siglip/`. Delete the folder after a change of GPU or TensorRT version.
 
 ### Documentation
 
