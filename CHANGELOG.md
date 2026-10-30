@@ -2,6 +2,11 @@
 
 All notable changes to this project are recorded here, newest first.
 
+## 2026-10-30
+
+### Added
+- README: citation section with the BibTeX entry of the EVLM paper.
+
 ## 2026-10-29
 
 ### Changed

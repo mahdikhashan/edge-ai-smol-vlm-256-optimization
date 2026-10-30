@@ -52,3 +52,17 @@ On one Colab GPU:
 - [TensorRT engine for SigLIP](docs/TENSORRT.md)
 - [EVLM benchmark and ablation](docs/EVLM.md)
 - [Changelog](CHANGELOG.md)
+
+### Citation
+
+If you use this repository or the EVLM benchmark, please cite the paper:
+
+```bibtex
+@inproceedings{farahani2026evlm,
+  title     = {EVLM: Intent-Driven Edge Vision Language Model for UAV-Based Power Line Inspection},
+  author    = {Farahani, Reza and Azimi, Zoha and Murturi, Ilir and Goknil, Arda and Sen, Sagar and Timmerer, Christian and Dustdar, Schahram},
+  booktitle = {2026 IEEE International Conference on Edge Computing and Communications (EDGE)},
+  year      = {2026},
+  doi       = {10.1109/EDGE72783.2026.00014}
+}
+```
